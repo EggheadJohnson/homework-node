@@ -44,7 +44,7 @@ test('download', function (t) {
   }
 
   function verifyLodash (callback) {
-    const _ = require('./packages/lodash/package')
+    const _ = require('./packages/lodash')
     t.equal(typeof _.map, 'function', '_.map exists')
     callback()
   }
@@ -109,7 +109,9 @@ test('download', function (t) {
     const cleanOutPackages = require('./utils').cleanOutPackages;
 
     downloadPackage('bootstrap', (err, response) => {
-      unpack(`${__dirname}/packages/${response.fileName}`, (err) => {
+      unpack({
+        fileName: response.fileName,
+        name: response.name}, (err) => {
         fs.readdir(`${__dirname}/packages`, (err, files) => {
           t.notEqual(files.indexOf('bootstrap-3.3.7.tgz'), 'bootstrap downloaded');
           t.notEqual(files.indexOf('bootstrap'), 'bootstrap unpacked');

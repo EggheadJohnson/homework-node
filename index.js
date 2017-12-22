@@ -13,8 +13,8 @@ module.exports = downloadPackages;
  * - Download the tarball from npm
  * - Unpack the tarball
  * - Clean up the tarball, leaving the unpacked folder behind
- * @param {count} required, must be a number
- * @param {callback} required, must be a function, executes at the end of above series
+ * @param {number} count required, must be a number
+ * @param {function} callback required, must be a function, executes at the end of above series
  *
 */
 function downloadPackages (count, callback) {
@@ -27,10 +27,10 @@ function downloadPackages (count, callback) {
       if (err) return callback(err);
       debug({err, names});
 
-      async.map(names, utils.downloadPackage, (err, files) => {
+      async.map(names, utils.downloadPackage, (err, npmPackages) => {
         if (err) return callback(err);
-        debug({err, files});
-        async.each(files, utils.unpack, (err) => {
+        debug({err, npmPackages});
+        async.each(npmPackages, utils.unpack, (err) => {
           if (err) return callback(err);
           utils.cleanOutPackages((file) => /tgz$/.test(file), callback);
         })
@@ -39,5 +39,3 @@ function downloadPackages (count, callback) {
     })
   })
 }
-
-downloadPackages(2, ()=>{});
