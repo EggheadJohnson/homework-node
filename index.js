@@ -18,7 +18,6 @@ module.exports = downloadPackages;
  *
 */
 function downloadPackages (count, callback) {
-  debug("HERE");
   if (!count || typeof count !== 'number' || count < 1) throw new Error("Count must be a number greater than or equal to 1");
   if (!callback || typeof callback !== 'function') throw new Error("Callback must be a function");
   utils.cleanOutPackages((err) => {

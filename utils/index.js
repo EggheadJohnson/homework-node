@@ -3,7 +3,6 @@
 const async = require('async');
 const request = require('request');
 const childProcess = require('child_process');
-const targz = require('targz');
 const tar = require('tar');
 const fs = require('fs');
 const cheerio = require('cheerio');
@@ -28,6 +27,9 @@ module.exports = {
  */
 
 function cleanOutPackages(filter, cb) {
+  // If neither filter nor cb exists
+  if (!filter) throw new Error("cb is required");
+  // If the cb does not exist, use the default filter
   if (!cb) {
     cb = filter;
     filter = () => true;
@@ -66,17 +68,13 @@ function downloadPackage(name, cb) {
   if (!name || !cb) throw new Error("Package name and callback are both required");
   childProcess.exec(`cd ${__dirname}/../packages && npm pack ${name}`, (err, stdOut, stdErr) => {
     if (err) return cb(err);
-
     // From what I've seen stdErr in this application tends to be a warning that some package is deprecated and should not scuttle the whole process
     if (stdErr) console.error(stdErr);
-
     let response = {
       name: name,
       fileName: stdOut.trim()
     }
     debug({err, stdOut, stdErr, response});
-
-
     cb(null, response);
   })
 }
@@ -122,6 +120,7 @@ function fetchNames(count, cb) {
  */
 
 function getOffsets(count) {
+  // Setting a default of 0 here will still set this program up to return the first 36 results
   count = count || 0;
   let maxPage = Math.floor(count/36);
   let offsets = [];
