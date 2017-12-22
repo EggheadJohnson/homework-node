@@ -4,6 +4,7 @@ const async = require('async');
 const request = require('request');
 const childProcess = require('child_process');
 const targz = require('targz');
+const tar = require('tar');
 const fs = require('fs');
 const cheerio = require('cheerio');
 const rimraf = require('rimraf');
@@ -19,7 +20,6 @@ module.exports = {
 }
 
 function cleanOutPackages(filter, cb) {
-  debug("Starting cleanOutPackages!");
   if (!cb) {
     cb = filter;
     filter = () => true;
@@ -102,11 +102,16 @@ function getOffsets(count) {
 }
 
 function unpack(file, cb) {
-  targz.decompress({
-    src: `${__dirname}/../packages/${file.fileName}`,
-    dest: `${__dirname}/../packages/${file.name}`
-  }, (err) => {
-    if (err) return cb(err);
-    cb();
+
+  fs.mkdir(`${__dirname}/../packages/${file.name}`, (err) => {
+    tar.x({
+      strip: 1,
+      cwd: `${__dirname}/../packages/${file.name}`,
+      file: `${__dirname}/../packages/${file.fileName}`
+    },
+    (err) => {
+      return cb(err);
+    })
   })
+
 }
