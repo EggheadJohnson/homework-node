@@ -7,7 +7,7 @@ const folderSize = require('get-folder-size')
 const download = require('./')
 
 test('download', function (t) {
-  // t.plan(3)
+  t.plan(3)
 
   const COUNT = parseInt(process.env.COUNT, 10) || 10
 
@@ -37,7 +37,7 @@ test('download', function (t) {
   }
 
   function verifyLodash (callback) {
-    const _ = require('./packages/lodash')
+    const _ = require('./packages/lodash/package')
     t.equal(typeof _.map, 'function', '_.map exists')
     callback()
   }

@@ -2,30 +2,26 @@
 
 const async = require('async');
 const utils = require('./utils');
-// const cheerio = require('cheerio');
-// const request = require('request');
 const debug = require('debug')('index');
-// const childProcess = require('child_process');
-// const targz = require('targz');
-// const fs = require('fs');
-// const rimraf = require('rimraf');
 
 module.exports = downloadPackages;
 
 function downloadPackages (count, callback) {
-
   utils.cleanOutPackages((err) => {
+    if (err) return callback(err);
     utils.fetchNames(count, (err, names) => {
+      if (err) return callback(err);
       debug({err, names});
 
       async.map(names, utils.downloadPackage, (err, files) => {
+        if (err) return callback(err);
         debug({err, files});
-        files.forEach(utils.unpack);
+        async.each(files, utils.unpack, (err) => {
+          if (err) return callback(err);
+          utils.cleanOutPackages((file) => /tgz$/.test(file), callback);
+        })
       })
 
     })
   })
-
-
-
 }

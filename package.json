@@ -2,10 +2,36 @@
   "scripts": {
     "test": "node test.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "async": "^2.6.0",
+    "cheerio": "^1.0.0-rc.2",
+    "debug": "^3.1.0",
+    "request": "^2.83.0",
+    "rimraf": "^2.6.2",
+    "targz": "^1.0.1"
+  },
   "devDependencies": {
     "get-folder-size": "~1.0.0",
     "tape": "~4.6.0",
     "run-series": "^1.1.4"
-  }
+  },
+  "name": "homework-node",
+  "description": "> Our Node.js code challenge for engineering applicants",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EggheadJohnson/homework-node.git"
+  },
+  "keywords": [
+    "eaze",
+    "homework",
+    "node"
+  ],
+  "author": "Paul Johnson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EggheadJohnson/homework-node/issues"
+  },
+  "homepage": "https://github.com/EggheadJohnson/homework-node#readme"
 }

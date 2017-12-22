@@ -18,9 +18,15 @@ module.exports = {
   unpack: unpack
 }
 
-function cleanOutPackages(cb) {
+function cleanOutPackages(filter, cb) {
+  debug("Starting cleanOutPackages!");
+  if (!cb) {
+    cb = filter;
+    filter = () => true;
+  }
   fs.readdir(`${__dirname}/../packages`, (err, files) => {
     files = files.filter(f => f !== '.' && f !== '..' && f !== '.gitignore');
+    files = files.filter(filter);
     debug(files);
     async.each(files, (file, cb) => {
 
@@ -43,6 +49,10 @@ function cleanOutPackages(cb) {
 
 function downloadPackage(name, cb) {
   childProcess.exec(`cd ${__dirname}/../packages && npm pack ${name}`, (err, stdOut, stdErr) => {
+    if (err) return cb(err);
+
+    // From what I've seen stdErr is just a warning that some package is deprecated and should not scuttle the whole process
+    if (stdErr) console.error(stdErr);
 
     let response = {
       name: name,
@@ -51,7 +61,7 @@ function downloadPackage(name, cb) {
     debug({err, stdOut, stdErr, response});
 
 
-    cb(err, response);
+    cb(null, response);
   })
 }
 
@@ -66,6 +76,7 @@ function fetchNames(count, cb) {
         offset: offset
       }
     }, (err, data, html) => {
+      if (err) return cb(err);
       const $ = cheerio.load(html)
       let names = $(".name").map(function(i, elem) {
         return $(this).text();
@@ -74,6 +85,7 @@ function fetchNames(count, cb) {
       cb();
     });
   }, (err) => {
+    if (err) return cb(err);
     allNames = allNames.slice(0, count);
     debug(allNames, allNames.length);
     cb(null, allNames);
@@ -89,11 +101,12 @@ function getOffsets(count) {
   return offsets;
 }
 
-function unpack(file) {
+function unpack(file, cb) {
   targz.decompress({
     src: `${__dirname}/../packages/${file.fileName}`,
     dest: `${__dirname}/../packages/${file.name}`
   }, (err) => {
-    debug({err});
+    if (err) return cb(err);
+    cb();
   })
 }
